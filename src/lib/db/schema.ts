@@ -1,6 +1,19 @@
 import { sqliteTable, text, integer } from "drizzle-orm/sqlite-core";
 import { sql } from "drizzle-orm";
 
+export const posts = sqliteTable("posts", {
+  id: text("id").primaryKey(),
+  slug: text("slug").unique(),
+  createdAt: integer("created_at", { mode: "timestamp_ms" })
+    .default(sql`(cast(unixepoch('subsecond') * 1000 as integer))`)
+    .notNull(),
+  authorId: text("author_id").references(() => users.id, {
+    onDelete: "cascade",
+  }),
+  title: text("title").notNull(),
+  content: text("content").notNull(),
+});
+
 // better auth
 export const users = sqliteTable("users", {
   id: text("id").primaryKey(),
